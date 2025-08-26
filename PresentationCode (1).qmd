@@ -1,0 +1,188 @@
+---
+title: "Project Presentation Title"
+subtitle: "Group L04G03"
+author: "Charlie Tran, Matthew Tang, Kevin Li, Richard Erren and Faiyad Ahmed"
+institute: "The University of Sydney"
+format: 
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "Problem statement"
+    #theme: serif
+    #auto-slide: 20000
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+    embed-resources: true
+---
+
+```{r, echo = FALSE}
+library(tidyverse)
+library(patchwork)
+library(ggpubr)
+library(ggplot2)
+library(qtlcharts)
+library(reshape2)
+library(plotly)
+
+theme_set(theme_bw())
+
+Data <- read_tsv("housing-prices-ge19.txt")
+Data = na.omit(Data)
+Data = Data %>% select(-Test)
+```
+
+## Introduction / Problem Statement
+
+<div style="font-size:0.7em;">
+
+-   In recent years, the housing market has become a central topic of interest, as property prices have skyrocketed across the United States. New York is now in top 10 of the most expensive city in the world. This has raised important questions for homeowners, real estate investors, and city planners alike:
+
+*What are the key factors that drive the value of a home?*
+
+```{r, echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics("/Users/matthewtang/Downloads/L04G03-main-1/new_york_city_manhattan_cityscape.jpg")
+
+```
+
+## Ideation process
+
+## Data Description
+
+<div style="font-size:0.7em;">
+
+Data resource: [Data on houses in Saratoga County, New York, USA in 2006](https://dasl.datadescription.com/datafile/housing-prices-ge19)
+
+Data structure: 1734 observations on 17 variables. Test variable was ignored as its meaning was unknown.
+
+::: columns
+::: {.column width="50%" style="font-size: 0.8em;"}
+\- **Price** = price of the house
+
+\- **Lot.Size** = size of the house's lot in acres
+
+\- **Age** = age of the house in years
+
+\- **Land.Value** = value of land (in \$USD)
+
+\- **Living.Area** = living area in square feet
+
+\- **Pct.College** = percentage of neighborhood that graduated college
+
+\- **Bedrooms** = number of bedrooms
+
+\- **Fireplaces** = number of fireplaces
+:::
+
+::: {.column width="50%" style="font-size: 0.8em;"}
+\- **Bathrooms** = number of bathrooms
+
+\- **Rooms** = number of rooms
+
+\- **Heating.Type** = type of heating system
+
+\- **Fuel.Type** = type of fuel used for heating
+
+\- **Sewer.Type** = type of sewer system
+
+\- **Waterfront** = whether the property includes waterfront
+
+\- **New.Construction** = whether the property is a new construction
+
+\- **Central.Air** = whether the house has central air
+:::
+:::
+
+## Data selection
+
+<div style="font-size:0.7em;">
+
+In our project statement, [Price]{.underline} is the dependent variable to be predicted and all other variables are considered independent variables.
+
+Base on the **Heat Map, Full Model** and **Stepwise Model**, we choose these variables as independent variables: **Lot.Size, Waterfront, Land.Value, New.Construct, Living.Area, Bathrooms**
+
+::: {layout-ncol="3"}
+### Heat Map
+:::
+
+```{r}
+cor_matrix <- cor(heat_data)
+
+melted_cor_matrix <- melt(cor_matrix)
+
+heatmap_plot <- ggplot(data = melted_cor_matrix, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1, 1), space = "Lab", 
+                       name="Correlation") +
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, 
+                                   size = 9, hjust = 1)) +
+  coord_fixed()
+
+ggplotly(heatmap_plot)
+
+```
+
+::: {layout-ncol="3"}
+### Full Model
+:::
+
+```{r}
+model = lm(Price ~ ., data = Data)
+summary(model)
+```
+
+::: {layout-ncol="3"}
+### Stepwise Model
+:::
+
+```{r}
+step_model = step(model)
+summary(step_model)
+```
+
+## 
+
+## Limitations and bias in the data
+
+::: {layout-ncol="2"}
+### List One
+
+-   [Item A]{.blue}
+-   [Item B]{.red}
+-   [Item C]{.purple}
+-   Item D
+
+### List Two
+
+-   **Item X**
+-   *Item Y*
+-   ~~Item Z~~
+:::
+
+## 
+
+## Multiple regression (lm() used)
+
+```{r}
+model <- lm(Price ~ Lot.Size + Waterfront + Age + Land.Value + New.Construct + 
+              Central.Air + Fuel.Type + Heat.Type + Sewer.Type + Living.Area + Pct.College + Bedrooms + Fireplaces + Bathrooms + Rooms, 
+            data = Data)
+
+summary(model)
+```
+
+```{r}
+step = step(model)
+step
+```
+
+```{r}
+library(ggfortify)
+autoplot(step, which = 1:2)
+```
