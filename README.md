@@ -1,0 +1,1 @@
+This is a group project from the course DATA2002 in USYD. It shows how using the proper data analysis techniques, we can figure out which factors are most significant towards the housing prices in New York. The main analysis technique used is a multivariable regression with multiple assumption checking techniques used.
